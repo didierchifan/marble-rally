@@ -3,6 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
 import { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
+import useGame from "./store/useGame";
 
 export default function Player() {
   const body = useRef();
@@ -13,6 +14,10 @@ export default function Player() {
 
   const [smoothCameraPosition] = useState(() => new THREE.Vector3(10, 10, 10));
   const [smoothCameraTarget] = useState(() => new THREE.Vector3());
+
+  const start = useGame((state) => state.start);
+  const end = useGame((state) => state.end);
+  const blocksCount = useGame((state) => state.blocksCount);
 
   const jump = () => {
     const origin = body.current.translation();
@@ -35,14 +40,20 @@ export default function Player() {
         }
       }
     );
+
+    const unsubscribeAny = subscribeKeys(() => {
+      start();
+    });
+
     return () => {
       unsubscribeJump();
+      unsubscribeAny();
     };
   }, []);
 
   useFrame((state, delta) => {
     // CONTROLS
-    const { forward, downward, leftward, rightward } = getKeys();
+    const { forward, backward, leftward, rightward } = getKeys();
 
     const impulse = { x: 0, y: 0, z: 0 };
     const torque = { x: 0, y: 0, z: 0 };
@@ -60,7 +71,7 @@ export default function Player() {
       torque.z -= torqueStrenght;
     }
 
-    if (downward) {
+    if (backward) {
       impulse.z += impulseStrenght;
       torque.x += torqueStrenght;
     }
@@ -89,6 +100,10 @@ export default function Player() {
 
     state.camera.position.copy(smoothCameraPosition);
     state.camera.lookAt(smoothCameraTarget);
+
+    // UPDATE PHASES
+    if (bodyPosition.z < -(blocksCount * 4 + 2))
+      console.log("we are at the end");
   });
 
   return (

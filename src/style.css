@@ -49,6 +49,21 @@ body,
   pointer-events: pointer;
   cursor: pointer;
 }
+.bravo {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 23.3%;
+  left: 0;
+  width: 100%;
+  color: #ffffff;
+  font-family: "Bebas Neue", cursive;
+  font-size: 80px;
+  background: #0f4267;
+  padding-top: 10px;
+  pointer-events: pointer;
+  cursor: pointer;
+}
 /* 
 controls */
 .controls {
